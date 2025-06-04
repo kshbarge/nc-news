@@ -27,3 +27,20 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe("GET /api/topics", () => {
+  test("200: Responds with an object containing an array of topics", () => {
+    return request(app)
+    .get("/api/topics")
+    .expect(200)
+    .then(({ body }) => {
+      const topicsList = body.topics
+      topicsList.forEach((topic) => {
+        const { slug, description } = topic
+        expect(typeof slug).toBe("string")
+        expect(typeof description).toBe("string")
+      })
+      expect(topicsList.length).not.toBe(0);
+    })
+  })
+})

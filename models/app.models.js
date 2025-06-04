@@ -1,7 +1,9 @@
-const endpointsJson = require("../endpoints.json")
 const db = require("../db/connection")
 
-const fetchEndpointsJSON = () => {
+const fetchTopics = () => {
+    return db.query(`SELECT * FROM topics`).then(({rows}) => {
+        return rows;
+    })
 }
 
-module.exports = { fetchEndpointsJSON }
+module.exports = { fetchTopics }
