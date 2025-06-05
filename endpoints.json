@@ -23,5 +23,17 @@
         }
       ]
     }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "pawsomeC0d3r",
+          "name": "Harold",
+          "avatar_url": "https://avatars.githubusercontent.com/u/129803356?s=400&u=2be55d7981044b5e2b3dac6093bdd39beb21813b&v=4"
+        }
+      ]
+    }
   }
 }

@@ -68,3 +68,21 @@ describe("GET /api/articles", () => {
     })
   })
 })
+
+describe("GET /api/users", () => {
+  test("200- Responds with an object containing an array of users", () => {
+    return request(app)
+    .get("/api/users")
+    .expect(200)
+    .then(({body}) => {
+      const usersList = body.users
+      usersList.forEach((user) => {
+        const { username, name, avatar_url } = user;
+        expect(typeof username).toBe("string")
+        expect(typeof name).toBe("string")
+        expect(typeof avatar_url).toBe("string")
+      })
+      expect(usersList.length).not.toBe(0);
+    })
+  })
+})

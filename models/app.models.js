@@ -32,4 +32,10 @@ const fetchArticles = () => {
     })
 }
 
-module.exports = { fetchTopics, fetchArticles }
+const fetchUsers = () => {
+    return db.query(`SELECT * FROM users`).then(({rows}) => {
+        return rows;
+    })
+}
+
+module.exports = { fetchTopics, fetchArticles, fetchUsers }
