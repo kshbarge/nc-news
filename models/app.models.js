@@ -38,4 +38,11 @@ const fetchUsers = () => {
     })
 }
 
-module.exports = { fetchTopics, fetchArticles, fetchUsers }
+const fetchSingleArticle = (id) => {
+    return db.query(`SELECT * FROM articles WHERE article_id = $1`, [id]).then(({rows}) => {
+        const singleArticle = rows[0]
+        return singleArticle;
+    })
+}
+
+module.exports = { fetchTopics, fetchArticles, fetchUsers, fetchSingleArticle }
