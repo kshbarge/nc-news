@@ -1,5 +1,5 @@
 const endpointsJson = require("../endpoints.json")
-const { fetchTopics } = require("../models/app.models.js")
+const { fetchTopics, fetchArticles } = require("../models/app.models.js")
 
 const getEndpointsJSON = (request,response) => {
   response.status(200).send({endpoints: endpointsJson});
@@ -11,4 +11,10 @@ const getTopics = (request, response) => {
     })
 }
 
-module.exports = { getEndpointsJSON, getTopics }
+const getArticles = (request, response) => {
+    fetchArticles().then((articleData) => {
+        response.status(200).send({articles: articleData})
+    })
+}
+
+module.exports = { getEndpointsJSON, getTopics, getArticles }

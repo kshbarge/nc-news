@@ -44,3 +44,27 @@ describe("GET /api/topics", () => {
     })
   })
 })
+
+describe("GET /api/articles", () => {
+  test("200: Responds with an object containing an array of articles", () => {
+    return request(app)
+    .get("/api/articles")
+    .expect(200)
+    .then(({body}) => {
+      const articlesList = body.articles
+      articlesList.forEach((article) => {
+        const { author, title, article_id, topic, created_at, votes, article_img_url, comment_count} = article
+        expect(typeof author).toBe("string")
+        expect(typeof title).toBe("string")
+        expect(typeof article_id).toBe("number")
+        expect(typeof topic).toBe("string")
+        expect(typeof created_at).toBe("string")
+        expect(typeof votes).toBe("number")
+        expect(typeof article_img_url).toBe("string")
+        expect(typeof comment_count).toBe("number")
+        expect(Object.hasOwn(article, "body")).toBe(false)
+      })
+      expect(articlesList.length).not.toBe(0);
+    })
+  })
+})
