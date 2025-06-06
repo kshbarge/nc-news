@@ -158,3 +158,64 @@ describe("GET /api/articles/:article_id/comments", () => {
     })
   })
 })
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: Posts a comment and responds with the posted comment", () => {
+    return request(app)
+    .post("/api/articles/2/comments")
+    .send({
+      username: "lurker",
+      body: "How long have I been scrolling for!?"
+    })
+    .expect(201)
+    .then(({ body }) => {
+      const singleComment = body.comment;
+      expect(typeof singleComment.comment_id).toBe("number")
+      expect(singleComment.article_id).toBe(2)
+      expect(typeof singleComment.body).toBe("string")
+      expect(typeof singleComment.votes).toBe("number")
+      expect(typeof singleComment.author).toBe("string")
+      expect(typeof singleComment.created_at).toBe("string")
+    })
+  })
+  test("400: Responds with an error when the request body has invalid fields", () => {
+    return request(app)
+    .post("/api/articles/3/comments")
+    .send({trillionVotes: true})
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request")
+    })
+  })
+  test("400: Responds with an error when the request fields have invalid values", () => {
+    return request(app)
+    .post("/api/articles/5/comments")
+    .send({username: "n0nExistentUser", body: "Trying to sneak in a comment from outside! >:3c"})
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request")
+    })  
+  })
+  test("400: Responds with an error if the article id is not valid", () => {
+    return request(app)
+    .get("/api/articles/caipirinha/comments")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request")
+    })
+  })
+  test("404: Responds with an error if the article id is valid but does not exist in the database", () => {
+    return request(app)
+    .get("/api/articles/9607/comments")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Not found")
+    })
+  })
+})
+
+//Different errors this time since it's a post!
+//400: Responds with an error when the request body has invalid fields
+//400 bad request -Request with valid field but field value is invalid eg wrong username
+//Article id invalid
+//article id valid but does not exist

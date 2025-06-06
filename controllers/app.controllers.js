@@ -1,5 +1,5 @@
 const endpointsJson = require("../endpoints.json")
-const { fetchTopics, fetchArticles, fetchUsers,fetchSingleArticle, fetchArticleComments } = require("../models/app.models.js")
+const { fetchTopics, fetchArticles, fetchUsers,fetchSingleArticle, fetchArticleComments, addArticleComment } = require("../models/app.models.js")
 
 const getEndpointsJSON = (request,response) => {
   response.status(200).send({endpoints: endpointsJson});
@@ -43,4 +43,20 @@ const getArticleComments = (request, response, next) => {
     })
 }
 
-module.exports = { getEndpointsJSON, getTopics, getArticles, getUsers, getSingleArticle, getArticleComments }
+const postArticleComment = (request, response, next) => {
+    const {username, body} = request.body
+    const { article_id } = request.params
+
+    if(Object.hasOwn(request.body, "username") === false || Object.hasOwn(request.body, "body" === false)) {
+        return Promise.reject({status: 400, msg: "Bad request"})
+    }
+
+    addArticleComment(username, body, article_id).then((postedComment) => {
+        response.status(201).send({comment: postedComment})
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = { getEndpointsJSON, getTopics, getArticles, getUsers, getSingleArticle, getArticleComments, postArticleComment }

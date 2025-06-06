@@ -57,4 +57,11 @@ const fetchArticleComments = (id) => {
     })
 }
 
-module.exports = { fetchTopics, fetchArticles, fetchUsers, fetchSingleArticle, fetchArticleComments }
+const addArticleComment = (username, body, id) => {
+    return db.query(`INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING comment_id, article_id, body, votes, author, created_at;`, [username, body, id]).then(({rows}) => {
+        const comment = rows[0]
+        return comment;
+    })
+}
+
+module.exports = { fetchTopics, fetchArticles, fetchUsers, fetchSingleArticle, fetchArticleComments, addArticleComment }
