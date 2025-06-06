@@ -70,7 +70,7 @@ describe("GET /api/articles", () => {
 })
 
 describe("GET /api/users", () => {
-  test("200- Responds with an object containing an array of users", () => {
+  test("200: Responds with an object containing an array of users", () => {
     return request(app)
     .get("/api/users")
     .expect(200)
@@ -88,7 +88,7 @@ describe("GET /api/users", () => {
 })
 
 describe("GET /api/articles/:article_id", () => {
-  test("200- Responds with an object with the key of article and the value of an article object", () => {
+  test("200: Responds with an object with the key of article and the value of an article object", () => {
     return request(app)
     .get("/api/articles/3")
     .expect(200)
@@ -104,7 +104,7 @@ describe("GET /api/articles/:article_id", () => {
       expect(typeof article.article_img_url).toBe("string")
     })
   })
-  test("400- Responds with an error if the article id is not valid", () => {
+  test("400: Responds with an error if the article id is not valid", () => {
     return request(app)
     .get("/api/articles/dagothwave")
     .expect(400)
@@ -112,9 +112,46 @@ describe("GET /api/articles/:article_id", () => {
       expect(body.msg).toBe("Bad request")
     })
   })
-  test("404- Responds with an error if the article id is valid but does not exist in the database", () => {
+  test("404: Responds with an error if the article id is valid but does not exist in the database", () => {
     return request(app)
     .get("/api/articles/30902")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Not found")
+    })
+  })
+})
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Responds with an object containing an array of comments corresponding to a specified article", () => {
+    return request (app)
+    .get("/api/articles/1/comments")
+    .expect(200)
+    .then(({ body }) => {
+      const commentsList = body.comments;
+      commentsList.forEach((comment) => {
+        const { comment_id, votes, created_at, author, body, article_id } = comment
+        expect(typeof comment_id).toBe("number")
+        expect(typeof votes).toBe("number")
+        expect(typeof created_at).toBe("string")
+        expect(typeof author).toBe("string")
+        expect(typeof body).toBe("string")
+        expect(article_id).toBe(1)
+      })
+      expect(commentsList.length).not.toBe(0);
+    })
+  })
+  test("400: Responds with an error if the article id is not valid", () => {
+    return request(app)
+    .get("/api/articles/caramelldansen/comments")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request")
+    })
+  })
+  test("404: Responds with an error if the article id is valid but does not exist in the database", () => {
+    return request(app)
+    .get("/api/articles/1337/comments")
     .expect(404)
     .then(({ body }) => {
       expect(body.msg).toBe("Not found")

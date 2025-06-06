@@ -48,4 +48,13 @@ const fetchSingleArticle = (id) => {
     })
 }
 
-module.exports = { fetchTopics, fetchArticles, fetchUsers, fetchSingleArticle }
+const fetchArticleComments = (id) => {
+    return db.query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`, [id]).then(({rows}) => {
+        if(!rows.length){
+          return Promise.reject({status: 404, msg: "Not found"});
+          }
+        return rows;
+    })
+}
+
+module.exports = { fetchTopics, fetchArticles, fetchUsers, fetchSingleArticle, fetchArticleComments }
