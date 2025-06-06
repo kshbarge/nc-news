@@ -199,6 +199,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   test("400: Responds with an error if the article id is not valid", () => {
     return request(app)
     .get("/api/articles/caipirinha/comments")
+    .send({username: "icellusedkars", body: "tasty :P"})
     .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe("Bad request")
@@ -207,6 +208,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   test("404: Responds with an error if the article id is valid but does not exist in the database", () => {
     return request(app)
     .get("/api/articles/9607/comments")
+    .send({username: "butter_bridge", body: "BOOOOOOOO0000000000000000000!"})
     .expect(404)
     .then(({ body }) => {
       expect(body.msg).toBe("Not found")
@@ -214,8 +216,58 @@ describe("POST /api/articles/:article_id/comments", () => {
   })
 })
 
-//Different errors this time since it's a post!
-//400: Responds with an error when the request body has invalid fields
-//400 bad request -Request with valid field but field value is invalid eg wrong username
-//Article id invalid
-//article id valid but does not exist
+describe('PATCH /api/articles/:article_id', () => {
+  test("200: Patches the votes on an article and returns the updated article", () => {
+    return request(app)
+    .patch("/api/articles/1")
+    .send({ inc_votes: -50 })
+    .expect(200)
+    .then(({ body }) => {
+      const { article } = body;
+      expect(typeof article.author).toBe("string")
+      expect(typeof article.title).toBe("string")
+      expect(article.article_id).toBe(1)
+      expect(typeof article.body).toBe("string")
+      expect(typeof article.topic).toBe("string")
+      expect(typeof article.created_at).toBe("string")
+      expect(article.votes).toBe(50)
+      expect(typeof article.article_img_url).toBe("string")
+    })
+  })
+  test("400: Responds with an error when the request body has invalid fields", () => {
+    return request(app)
+    .patch("/api/articles/2")
+    .send({ approvalrating: 99})
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request")
+    })
+  })
+  test("400: Responds with an error when the request field has an invalid value", () => {
+    return request(app)
+    .patch("/api/articles/5")
+    .send({inc_votes: "elephants"})
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request")
+    })
+  })
+  test("400: Responds with an error if the article id is not valid", () => {
+    return request(app)
+    .get("/api/articles/paffendorf/comments")
+    .send({ inc_votes: 12})
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request")
+    })
+  })
+  test("404: Responds with an error if the article id is valid but does not exist in the database", () => {
+    return request(app)
+    .get("/api/articles/77777/comments")
+    .send({inc_votes: -7})
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Not found")
+    })
+  })
+})

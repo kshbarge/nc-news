@@ -64,4 +64,11 @@ const addArticleComment = (username, body, id) => {
     })
 }
 
-module.exports = { fetchTopics, fetchArticles, fetchUsers, fetchSingleArticle, fetchArticleComments, addArticleComment }
+const updateArticleVotes = (voteChange, id) => {
+    return db.query(`UPDATE articles SET votes = votes + $1 WHERE $2 RETURNING *`, [voteChange, id]).then(({rows}) => {
+        const selectedArticle = rows[id - 1]
+        return selectedArticle;
+    })
+}
+
+module.exports = { fetchTopics, fetchArticles, fetchUsers, fetchSingleArticle, fetchArticleComments, addArticleComment, updateArticleVotes }

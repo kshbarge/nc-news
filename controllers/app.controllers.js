@@ -1,5 +1,5 @@
 const endpointsJson = require("../endpoints.json")
-const { fetchTopics, fetchArticles, fetchUsers,fetchSingleArticle, fetchArticleComments, addArticleComment } = require("../models/app.models.js")
+const { fetchTopics, fetchArticles, fetchUsers,fetchSingleArticle, fetchArticleComments, addArticleComment, updateArticleVotes } = require("../models/app.models.js")
 
 const getEndpointsJSON = (request,response) => {
   response.status(200).send({endpoints: endpointsJson});
@@ -59,4 +59,16 @@ const postArticleComment = (request, response, next) => {
     })
 }
 
-module.exports = { getEndpointsJSON, getTopics, getArticles, getUsers, getSingleArticle, getArticleComments, postArticleComment }
+const patchArticleVotes = (request, response, next) => {
+    const {inc_votes} = request.body
+    const {article_id} = request.params
+    updateArticleVotes(inc_votes, article_id).then((patchedArticle) => {
+        response.status(200).send({article: patchedArticle})
+    })
+    .catch((err) => {
+        console.log(err)
+        next(err)
+    })
+}
+
+module.exports = { getEndpointsJSON, getTopics, getArticles, getUsers, getSingleArticle, getArticleComments, postArticleComment, patchArticleVotes }

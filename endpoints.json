@@ -89,5 +89,22 @@
       "body": "Making my (paw)mark on the net!",
       "article_id": 2
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Updates the votes key on a specified article",
+    "exampleRequest": { "inc_votes" : 3 },
+    "exampleResponse": {
+      "article": {
+          "author": "pawsomec0d3r",
+          "title": "snacks to keep you coding",
+          "article_id": 2,
+          "body": "Delicious and healthy for your everyday cat!",
+          "topic": "mice",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 22,
+          "article_img_url": "imagesharingsite.com/mouseavatars/1293843782",
+          "comment_count": 7
+        }
+    }
   }
 }
