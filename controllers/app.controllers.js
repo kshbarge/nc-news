@@ -23,10 +23,13 @@ const getUsers = (request, response) => {
     })
 }
 
-const getSingleArticle = (request, response) => {
+const getSingleArticle = (request, response, next) => {
     const { article_id } = request.params;
     fetchSingleArticle(article_id).then((singleArticle) => {
         response.status(200).send({article: singleArticle})
+    })
+    .catch((err) => {
+        next(err);
     })
 }
 

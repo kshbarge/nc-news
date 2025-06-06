@@ -104,4 +104,20 @@ describe("GET /api/articles/:article_id", () => {
       expect(typeof article.article_img_url).toBe("string")
     })
   })
+  test("400- Responds with an error if the article id is not valid", () => {
+    return request(app)
+    .get("/api/articles/dagothwave")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request")
+    })
+  })
+  test("404- Responds with an error if the article id is valid but does not exist in the database", () => {
+    return request(app)
+    .get("/api/articles/30902")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Not found")
+    })
+  })
 })
