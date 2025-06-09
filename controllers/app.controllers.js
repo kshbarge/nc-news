@@ -1,5 +1,5 @@
 const endpointsJson = require("../endpoints.json")
-const { fetchTopics, fetchArticles, fetchUsers,fetchSingleArticle, fetchArticleComments, addArticleComment, updateArticleVotes } = require("../models/app.models.js")
+const { fetchTopics, fetchArticles, fetchUsers,fetchSingleArticle, fetchArticleComments, addArticleComment, updateArticleVotes, destroyComment } = require("../models/app.models.js")
 
 const getEndpointsJSON = (request,response) => {
   response.status(200).send({endpoints: endpointsJson});
@@ -71,4 +71,11 @@ const patchArticleVotes = (request, response, next) => {
     })
 }
 
-module.exports = { getEndpointsJSON, getTopics, getArticles, getUsers, getSingleArticle, getArticleComments, postArticleComment, patchArticleVotes }
+const deleteComment = (request, response, next) => {
+    const {comment_id} = request.params
+    destroyComment(comment_id).then((deletionData) => {
+        response.status(204).send(deletionData)
+    })
+}
+
+module.exports = { getEndpointsJSON, getTopics, getArticles, getUsers, getSingleArticle, getArticleComments, postArticleComment, patchArticleVotes, deleteComment }

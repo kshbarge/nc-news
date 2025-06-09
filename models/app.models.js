@@ -71,4 +71,10 @@ const updateArticleVotes = (voteChange, id) => {
     })
 }
 
-module.exports = { fetchTopics, fetchArticles, fetchUsers, fetchSingleArticle, fetchArticleComments, addArticleComment, updateArticleVotes }
+const destroyComment = (id) => {
+    return db.query(`DELETE FROM comments WHERE comment_id = $1`, [id]).then(({rows}) => {
+        return rows;
+    })
+}
+
+module.exports = { fetchTopics, fetchArticles, fetchUsers, fetchSingleArticle, fetchArticleComments, addArticleComment, updateArticleVotes, destroyComment }

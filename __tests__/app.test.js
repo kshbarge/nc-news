@@ -216,7 +216,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   })
 })
 
-describe('PATCH /api/articles/:article_id', () => {
+describe("PATCH /api/articles/:article_id", () => {
   test("200: Patches the votes on an article and returns the updated article", () => {
     return request(app)
     .patch("/api/articles/1")
@@ -265,6 +265,33 @@ describe('PATCH /api/articles/:article_id', () => {
     return request(app)
     .get("/api/articles/77777/comments")
     .send({inc_votes: -7})
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Not found")
+    })
+  })
+})
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: Deletes the comment at the specified comment id", () => {
+    return request(app)
+    .delete("/api/comments/7")
+    .expect(204)
+    .then(({statusCode}) => {
+      expect(statusCode).toBe(204)
+    })
+  })
+  test("400: Responds with an error when trying to delete a comment referenced by an invalid id", () => {
+    return request(app)
+    .get("/api/articles/ievanpolkka/comments")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request")
+    }) 
+  })
+  test("404: Responds with an error when trying to delete a comment that has a valid id but does not exist in the database", () => {
+    return request(app)
+    .get("/api/articles/98765/comments")
     .expect(404)
     .then(({ body }) => {
       expect(body.msg).toBe("Not found")

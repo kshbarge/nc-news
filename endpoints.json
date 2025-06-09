@@ -106,5 +106,8 @@
           "comment_count": 7
         }
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes the comment with the specified id"
   }
 }
