@@ -85,12 +85,39 @@ describe("GET /api/articles", () => {
       expect(isAscending).toBe(true);
     })
   })
+  test("200: Can filter the served articles by topic", () => {
+    return request(app)
+    .get("/api/articles?topic=cats")
+    .expect(200)
+    .then(({body}) => {
+      const articlesList = body.articles
+      articlesList.forEach((article) => {
+        expect(article.topic).toBe("cats");
+      })
+    })
+  })
+  test("200: Responds with an empty array when the topic query is valid but no articles reference it", () => {
+    return request(app)
+    .get("/api/articles?topic=paper")
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles).toEqual([]);
+    })
+  })
   test("404: Responds with an error when a non-specified query is used", () => {
     return request(app)
     .get("/api/articles?sort_by=SQLINTECTION&&order=desc")
     .expect(404)
     .then(({body}) => {
       expect(body.msg).toBe("Invalid query")
+    })
+  })
+  test("404: Responds with an error when an invalid topic query is used", () => {
+    return request(app)
+    .get("/api/articles?topic=dogs")
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("Not found")
     })
   })
 })

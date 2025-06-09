@@ -13,7 +13,8 @@
     "description": "serves an array of all articles",
     "queries": {
       "sort_by": ["created_at", "votes", "title", "topic", "author"],
-      "order": ["ASC", "DESC"]
+      "order": ["ASC", "DESC"],
+      "topics": ["Any slug value from the topics list"]
     },
     "exampleResponse": {
       "articles": [

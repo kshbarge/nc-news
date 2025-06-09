@@ -1,5 +1,5 @@
 const endpointsJson = require("../endpoints.json")
-const { fetchTopics, fetchArticles, fetchUsers,fetchSingleArticle, fetchArticleComments, addArticleComment, updateArticleVotes, destroyComment } = require("../models/app.models.js")
+const { fetchTopics, doesTopicExist, fetchArticles, fetchUsers,fetchSingleArticle, fetchArticleComments, addArticleComment, updateArticleVotes, destroyComment } = require("../models/app.models.js")
 
 const getEndpointsJSON = (request,response) => {
   response.status(200).send({endpoints: endpointsJson});
@@ -12,8 +12,15 @@ const getTopics = (request, response) => {
 }
 
 const getArticles = (request, response, next) => {
-    const { sort_by, order } = request.query
-    fetchArticles(sort_by, order).then((articleData) => {
+    const { sort_by, order, topic } = request.query
+    const promises = [fetchArticles(sort_by, order, topic)]
+
+    if(topic){
+        promises.push(doesTopicExist(topic))
+    }
+
+    Promise.all(promises).then((resolvedPromises) => {
+        articleData = resolvedPromises[0]
         response.status(200).send({articles: articleData})
     })
     .catch((err) => {

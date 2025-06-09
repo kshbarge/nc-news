@@ -6,9 +6,20 @@ const fetchTopics = () => {
     })
 }
 
-const fetchArticles = (sort_by, order) => {
+const doesTopicExist = (topic) => {
+    return db.query('SELECT * FROM topics WHERE slug = $1', [topic])
+    .then (({rows}) => {
+      if (!rows.length) {
+        return Promise.reject({status: 404, msg: 'Not found'});
+        }
+      }
+    )
+}
+
+const fetchArticles = (sort_by, order, topic) => {
     const permittedQueriesSort_by = ["created_at", "votes", "title", "topic", "author"];
     const permittedQueriesOrder = ["ASC", "DESC"];
+    const queryValues = [];
     let queryString = `SELECT *
       FROM  (
           SELECT article_id, title, topic, author, created_at, votes, article_img_url
@@ -37,7 +48,12 @@ const fetchArticles = (sort_by, order) => {
         queryString = queryString.replace("DESC", `${order}`)
     }
 
-    return db.query(queryString)
+    if (topic){
+        queryString = queryString.replace("USING (article_id)", `USING (article_id) WHERE topic = $1`) 
+        queryValues.push(topic)
+    }
+
+    return db.query(queryString, queryValues)
     .then(({rows}) => {
         rows.forEach((article) => {
             if (article.comment_count === null) {
@@ -95,4 +111,4 @@ const destroyComment = (id) => {
     })
 }
 
-module.exports = { fetchTopics, fetchArticles, fetchUsers, fetchSingleArticle, fetchArticleComments, addArticleComment, updateArticleVotes, destroyComment }
+module.exports = { fetchTopics, doesTopicExist, fetchArticles, fetchUsers, fetchSingleArticle, fetchArticleComments, addArticleComment, updateArticleVotes, destroyComment }
