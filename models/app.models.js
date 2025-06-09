@@ -6,8 +6,10 @@ const fetchTopics = () => {
     })
 }
 
-const fetchArticles = () => {
-    return db.query(`SELECT *
+const fetchArticles = (sort_by, order) => {
+    const permittedQueriesSort_by = ["created_at", "votes", "title", "topic", "author"];
+    const permittedQueriesOrder = ["ASC", "DESC"];
+    let queryString = `SELECT *
       FROM  (
           SELECT article_id, title, topic, author, created_at, votes, article_img_url
           FROM   articles
@@ -19,7 +21,23 @@ const fetchArticles = () => {
           GROUP BY article_id
           )
       USING (article_id)
-      ORDER BY created_at DESC;`)
+      ORDER BY created_at DESC;`
+
+    if (sort_by){
+        if (!permittedQueriesSort_by.includes(sort_by)){
+            return Promise.reject({ status: 404, msg: "Invalid query" });
+        }
+        queryString = queryString.replace("ORDER BY created_at", `ORDER BY ${sort_by}`)
+    }
+
+    if (order){
+        if(!permittedQueriesOrder.includes(order)){
+            return Promise.reject({ status: 404, msg: "Invalid query" });
+        }
+        queryString = queryString.replace("DESC", `${order}`)
+    }
+
+    return db.query(queryString)
     .then(({rows}) => {
         rows.forEach((article) => {
             if (article.comment_count === null) {

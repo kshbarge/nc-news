@@ -67,6 +67,32 @@ describe("GET /api/articles", () => {
       expect(articlesList.length).not.toBe(0);
     })
   })
+  test("200: Accepts various queries and responds with a correctly ordered object", () => {
+    return request(app)
+    .get("/api/articles?sort_by=votes&&order=ASC")
+    .expect(200)
+    .then(({body}) => {
+      const articlesList = body.articles
+      const voteArray = []
+      articlesList.forEach((article) => {
+        voteArray.push(article.votes)
+      })
+
+      const isAscending = voteArray.reduce((isSorted, value, index) => {
+        return isSorted && (index === 0 || voteArray[index - 1] <= value);
+    }, true);
+
+      expect(isAscending).toBe(true);
+    })
+  })
+  test("404: Responds with an error when a non-specified query is used", () => {
+    return request(app)
+    .get("/api/articles?sort_by=SQLINTECTION&&order=desc")
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("Invalid query")
+    })
+  })
 })
 
 describe("GET /api/users", () => {

@@ -11,9 +11,13 @@ const getTopics = (request, response) => {
     })
 }
 
-const getArticles = (request, response) => {
-    fetchArticles().then((articleData) => {
+const getArticles = (request, response, next) => {
+    const { sort_by, order } = request.query
+    fetchArticles(sort_by, order).then((articleData) => {
         response.status(200).send({articles: articleData})
+    })
+    .catch((err) => {
+        next(err)
     })
 }
 
@@ -66,7 +70,6 @@ const patchArticleVotes = (request, response, next) => {
         response.status(200).send({article: patchedArticle})
     })
     .catch((err) => {
-        console.log(err)
         next(err)
     })
 }
