@@ -5,6 +5,8 @@ const { handleCustomErrors, handlePostgresErrors, handleServerErrors } = require
 const app = express();
 app.use(express.json());
 
+app.use(express.static('public'))
+
 app.get('/api', getEndpointsJSON);
 
 app.get('/api/topics', getTopics);
