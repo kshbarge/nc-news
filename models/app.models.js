@@ -18,7 +18,7 @@ const doesTopicExist = (topic) => {
 
 const fetchArticles = (sort_by, order, topic) => {
     const permittedQueriesSort_by = ["created_at", "votes", "title", "topic", "author"];
-    const permittedQueriesOrder = ["ASC", "DESC"];
+    const permittedQueriesOrder = ["asc", "desc"];
     const queryValues = [];
     let queryString = `SELECT *
       FROM  (
@@ -36,16 +36,16 @@ const fetchArticles = (sort_by, order, topic) => {
 
     if (sort_by){
         if (!permittedQueriesSort_by.includes(sort_by)){
-            return Promise.reject({ status: 404, msg: "Invalid query" });
+            return Promise.reject({ status: 400, msg: "Invalid query" });
         }
         queryString = queryString.replace("ORDER BY created_at", `ORDER BY ${sort_by}`)
     }
 
     if (order){
         if(!permittedQueriesOrder.includes(order)){
-            return Promise.reject({ status: 404, msg: "Invalid query" });
+            return Promise.reject({ status: 400, msg: "Invalid query" });
         }
-        queryString = queryString.replace("DESC", `${order}`)
+        queryString = queryString.replace("DESC", `${order.toUpperCase()}`)
     }
 
     if (topic){
@@ -85,6 +85,7 @@ const fetchSingleArticle = (id) => {
 const fetchArticleComments = (id) => {
     return db.query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`, [id]).then(({rows}) => {
         if(!rows.length){
+          //run the checkArticleExists utils function
           return Promise.reject({status: 404, msg: "Not found"});
           }
         return rows;

@@ -69,7 +69,7 @@ describe("GET /api/articles", () => {
   })
   test("200: Accepts various queries and responds with a correctly ordered object", () => {
     return request(app)
-    .get("/api/articles?sort_by=votes&&order=ASC")
+    .get("/api/articles?sort_by=votes&&order=asc")
     .expect(200)
     .then(({body}) => {
       const articlesList = body.articles
@@ -104,10 +104,10 @@ describe("GET /api/articles", () => {
       expect(body.articles).toEqual([]);
     })
   })
-  test("404: Responds with an error when a non-specified query is used", () => {
+  test("400: Responds with an error when a non-specified query is used", () => {
     return request(app)
     .get("/api/articles?sort_by=SQLINTECTION&&order=desc")
-    .expect(404)
+    .expect(400)
     .then(({body}) => {
       expect(body.msg).toBe("Invalid query")
     })
