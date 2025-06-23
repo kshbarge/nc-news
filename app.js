@@ -1,10 +1,11 @@
 const express = require("express");
+const cors = require('cors')
 const { getEndpointsJSON, getTopics, getArticles, getUsers, getSingleArticle, getArticleComments, postArticleComment, patchArticleVotes, deleteComment } = require("./controllers/app.controllers.js")
 const { handleCustomErrors, handlePostgresErrors, handleServerErrors } = require("./errors.js")
 
 const app = express();
+app.use(cors());
 app.use(express.json());
-
 app.use(express.static('public'))
 
 app.get('/api', getEndpointsJSON);

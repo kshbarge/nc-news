@@ -8,7 +8,7 @@
 
 - This repo can be cloned by making a fork of it and then using the command `git clone (your repo url)` in the location at which you wish to set up a local repository.
 
-- This project uses dotenv, express and pg as dependencies, and husky, jest, pg-format and supertest as dev dependencies. To install these dependencies locally, navigate to the main folder of the repository and run `npm install`.
+- This project uses dotenv, express, pg and cors as dependencies, and husky, jest, pg-format and supertest as dev dependencies. To install these dependencies locally, navigate to the main folder of the repository and run `npm install`.
 
 - In order to setup you local database for the first time, run `npm run setup-dbs`. To seed your local database for development, run `npm run seed`. Don't worry about seeding for testing, as this is done automatically by the testing environment before tests are executed. If you wish to seed the production database, run `npm run seed-prod`.
 
