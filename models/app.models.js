@@ -99,9 +99,13 @@ const addArticleComment = (username, body, id) => {
     })
 }
 
-const updateArticleVotes = (voteChange, id) => {
-    return db.query(`UPDATE articles SET votes = votes + $1 WHERE $2 RETURNING *`, [voteChange, id]).then(({rows}) => {
-        const selectedArticle = rows[id - 1]
+const updateArticleVotes = (voteChange = 0, id) => {
+    return db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`, [voteChange, id]).then(({rows}) => {
+        if(!rows.length){
+            return Promise.reject({status:404, msg: "Not found"})
+        }
+        const selectedArticle = rows[0]
+        console.log(selectedArticle)
         return selectedArticle;
     })
 }

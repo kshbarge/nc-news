@@ -227,4 +227,4 @@ describe('Tests for createLookupObject', () => {
     createLookupObject(testRows, "title", "article_id");
     expect(testRows).toEqual(testRowsCopy);
   })
-});
+})

@@ -251,7 +251,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   })
   test("400: Responds with an error if the article id is not valid", () => {
     return request(app)
-    .get("/api/articles/caipirinha/comments")
+    .post("/api/articles/caipirinha/comments")
     .send({username: "icellusedkars", body: "tasty :P"})
     .expect(400)
     .then(({ body }) => {
@@ -287,15 +287,23 @@ describe("PATCH /api/articles/:article_id", () => {
       expect(typeof article.article_img_url).toBe("string")
     })
   })
-  test("400: Responds with an error when the request body has invalid fields", () => {
+  test("200: Requests with an empty body are ignored and return the unchanged article", () => {
     return request(app)
-    .patch("/api/articles/2")
-    .send({ approvalrating: 99})
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("Bad request")
+    .patch("/api/articles/1")
+    .send({})
+    .expect(200)
+    .then(({body}) => {
+      const { article } = body
+      expect(typeof article.author).toBe("string")
+      expect(typeof article.title).toBe("string")
+      expect(article.article_id).toBe(1)
+      expect(typeof article.body).toBe("string")
+      expect(typeof article.topic).toBe("string")
+      expect(typeof article.created_at).toBe("string")
+      expect(article.votes).toBe(100)
+      expect(typeof article.article_img_url).toBe("string")
     })
-  })
+})
   test("400: Responds with an error when the request field has an invalid value", () => {
     return request(app)
     .patch("/api/articles/5")
@@ -307,7 +315,7 @@ describe("PATCH /api/articles/:article_id", () => {
   })
   test("400: Responds with an error if the article id is not valid", () => {
     return request(app)
-    .get("/api/articles/paffendorf/comments")
+    .patch("/api/articles/paffendorf")
     .send({ inc_votes: 12})
     .expect(400)
     .then(({ body }) => {
@@ -316,7 +324,7 @@ describe("PATCH /api/articles/:article_id", () => {
   })
   test("404: Responds with an error if the article id is valid but does not exist in the database", () => {
     return request(app)
-    .get("/api/articles/77777/comments")
+    .patch("/api/articles/77777")
     .send({inc_votes: -7})
     .expect(404)
     .then(({ body }) => {
