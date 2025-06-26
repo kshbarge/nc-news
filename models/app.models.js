@@ -1,4 +1,5 @@
 const db = require("../db/connection")
+const { checkArticleExists } = require("../db/seeds/utils")
 
 const fetchTopics = () => {
     return db.query(`SELECT * FROM topics`).then(({rows}) => {
@@ -73,10 +74,32 @@ const fetchUsers = () => {
 }
 
 const fetchSingleArticle = (id) => {
-    return db.query(`SELECT * FROM articles WHERE article_id = $1`, [id]).then(({rows}) => {
+    return db.query(`SELECT *
+      FROM  (
+          SELECT article_id, title, topic, author, body, created_at, votes, article_img_url
+          FROM   articles
+          WHERE article_id = $1
+          )
+      LEFT OUTER JOIN (
+          SELECT article_id,
+          COUNT(article_id) AS "comment_count"
+          FROM comments
+          GROUP BY article_id
+          )
+      USING (article_id)
+      ORDER BY created_at DESC`, [id]).then(({rows}) => {
+
         if(!rows.length){
           return Promise.reject({status: 404, msg: "Not found"});
           }
+
+        rows.forEach((article) => {
+            if (article.comment_count === null) {
+                article.comment_count = 0;
+            } else {
+                article.comment_count = Number(article.comment_count);
+            }
+        })
         const singleArticle = rows[0]
         return singleArticle;
     })
@@ -85,8 +108,7 @@ const fetchSingleArticle = (id) => {
 const fetchArticleComments = (id) => {
     return db.query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`, [id]).then(({rows}) => {
         if(!rows.length){
-          //run the checkArticleExists utils function
-          return Promise.reject({status: 404, msg: "Not found"});
+            return checkArticleExists(id)
           }
         return rows;
     })
@@ -105,7 +127,6 @@ const updateArticleVotes = (voteChange = 0, id) => {
             return Promise.reject({status:404, msg: "Not found"})
         }
         const selectedArticle = rows[0]
-        console.log(selectedArticle)
         return selectedArticle;
     })
 }

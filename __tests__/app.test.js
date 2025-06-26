@@ -155,6 +155,7 @@ describe("GET /api/articles/:article_id", () => {
       expect(typeof article.created_at).toBe("string")
       expect(typeof article.votes).toBe("number")
       expect(typeof article.article_img_url).toBe("string")
+      expect(typeof article.comment_count).toBe("number")
     })
   })
   test("400: Responds with an error if the article id is not valid", () => {
@@ -192,6 +193,15 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(article_id).toBe(1)
       })
       expect(commentsList.length).not.toBe(0);
+    })
+  })
+  test("200: Responds with an object containing an empty array if the specified article exists, but has no comments", () => {
+    return request(app)
+    .get("/api/articles/2/comments")
+    .expect(200)
+    .then(({body}) => {
+      const commentsList = body.comments
+      expect(commentsList).toEqual([])
     })
   })
   test("400: Responds with an error if the article id is not valid", () => {
@@ -240,13 +250,13 @@ describe("POST /api/articles/:article_id/comments", () => {
       expect(body.msg).toBe("Bad request")
     })
   })
-  test("400: Responds with an error when the request fields have invalid values", () => {
+  test("404: Responds with an error when the request field contains a valid username that does not exist", () => {
     return request(app)
     .post("/api/articles/5/comments")
     .send({username: "n0nExistentUser", body: "Trying to sneak in a comment from outside! >:3c"})
-    .expect(400)
+    .expect(404)
     .then(({ body }) => {
-      expect(body.msg).toBe("Bad request")
+      expect(body.msg).toBe("Not found")
     })  
   })
   test("400: Responds with an error if the article id is not valid", () => {
@@ -260,7 +270,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   })
   test("404: Responds with an error if the article id is valid but does not exist in the database", () => {
     return request(app)
-    .get("/api/articles/9607/comments")
+    .post("/api/articles/9607/comments")
     .send({username: "butter_bridge", body: "BOOOOOOOO0000000000000000000!"})
     .expect(404)
     .then(({ body }) => {
